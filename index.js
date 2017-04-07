@@ -5,6 +5,7 @@ class SurfacePoint {
         this.x = x;
         this.y = y;
         this.speed = 0;
+        this.newY = 0;
     }
 }
 
@@ -12,9 +13,9 @@ class App {
 
     constructor () {
         // constants
-        this.NUMBER_OF_POINTS = 19;
-        this.DISTANCE_BETWEEN_POINTS = 10;
-        this.POINT_RADIUS = 3;
+        this.NUMBER_OF_POINTS = 99;
+        this.DISTANCE_BETWEEN_POINTS = 5;
+        this.POINT_RADIUS = 2;
         this.SPRING_K = 1e-3;  // empirically determined
 
         // create and add SVG element
@@ -68,11 +69,17 @@ class App {
         for (let i = 0; i < this.pointsData.length; i++) {
             const point = this.pointsData[i];
 
-            point.speed -= this.SPRING_K * point.y * dt;
-            point.y += point.speed;
+            const leftDist = (i > 0) ? point.y - this.pointsData[i - 1].y : point.y;
+            const rightDist = (i < this.pointsData.length - 1) ? point.y - this.pointsData[i + 1].y : point.y;
+
+            point.speed -= this.SPRING_K * (leftDist + rightDist) * dt;
+            point.newY = point.y + point.speed;
         }
 
         // ToDo replace current y values with the new ones
+        for (let point of this.pointsData) {
+            point.y = point.newY;
+        }
     }
 
     /**
