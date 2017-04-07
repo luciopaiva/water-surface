@@ -43,9 +43,8 @@ class App {
         // cause some disturbance on the middle point
         this.pointsData[Math.floor(this.NUMBER_OF_POINTS / 2)].y = 5;
 
-        this.pointsBind = this.svg.selectAll('circle').data(this.pointsData);
-        this.pointsBind.enter()
-            .each(point => console.info(`added point <${point.x}, ${point.y}>`))
+        this.svg.selectAll('circle').data(this.pointsData).enter()
+            // .each(point => console.info(`added point <${point.x}, ${point.y}>`))
             .append('circle')
             .classed('surface-point', true)
             .attr('cx', (point) => this.x(point.x))
@@ -61,10 +60,6 @@ class App {
 
             point.speed -= this.SPRING_K * point.y * dt;
             point.y += point.speed;
-
-            if (point.id == 9) {
-                console.info(`${point.id}: y:${point.y} speed:${point.speed}`);
-            }
         }
 
         // ToDo replace current y values with the new ones
@@ -73,13 +68,8 @@ class App {
     doFrame(dt, currentTime) {
         this.step(dt);
 
-        this.pointsBind = this.svg.selectAll('circle').data(this.pointsData);
-        this.pointsBind.attr('cy', (point) => {
-            if (point.id == 9) {
-                console.info(`changing y for point ${point.id} at ${point.y}`);
-            }
-            return this.y(point.y);
-        });
+        this.svg.selectAll('circle').data(this.pointsData)
+            .attr('cy', (point) => this.y(point.y));
         this.updateFps(dt);
         requestAnimationFrame((time) => this.doFrame(time - currentTime, time));
     }
