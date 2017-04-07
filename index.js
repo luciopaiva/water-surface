@@ -11,6 +11,12 @@ class SurfacePoint {
 class App {
 
     constructor () {
+        // constants
+        this.NUMBER_OF_POINTS = 19;
+        this.DISTANCE_BETWEEN_POINTS = 10;
+        this.POINT_RADIUS = 3;
+        this.SPRING_K = 1e-3;  // empirically determined
+
         // create and add SVG element
         const width = window.innerWidth - 50;
         const height = window.innerHeight - 50;
@@ -18,12 +24,8 @@ class App {
             .attr('width', width)
             .attr('height', height);
 
-        this.NUMBER_OF_POINTS = 19;
-        this.DISTANCE_BETWEEN_POINTS = 10;
-        this.POINT_RADIUS = 3;
-        this.SPRING_K = 1e-3;  // empirically determined
+        // d3 scales
         const domainWidth = (this.NUMBER_OF_POINTS + 1) * this.DISTANCE_BETWEEN_POINTS;
-
         this.x = d3.scaleLinear().domain([0, domainWidth]).range([0, width]);
         this.y = d3.scaleLinear().domain([10, -10]).range([0, height]);
 
@@ -34,6 +36,9 @@ class App {
         requestAnimationFrame((time) => this.doFrame(0, time));
     }
 
+    /**
+     * Initialize model and view.
+     */
     initializePoints() {
         this.pointsData = [];
         for (let i = 0; i < this.NUMBER_OF_POINTS; i++) {
@@ -52,6 +57,11 @@ class App {
             .attr('r', (point) => this.x(this.POINT_RADIUS));
     }
 
+    /**
+     * Update physics parameters.
+     *
+     * @param dt elapsed time in ms
+     */
     step(dt) {
         // ToDo calculate future y's here, but hold them into temp vars
         // ToDo take into account neighboring points
@@ -65,6 +75,12 @@ class App {
         // ToDo replace current y values with the new ones
     }
 
+    /**
+     * Update simulation.
+     *
+     * @param dt elapsed time in ms since last frame
+     * @param currentTime current time
+     */
     doFrame(dt, currentTime) {
         this.step(dt);
 
@@ -74,6 +90,11 @@ class App {
         requestAnimationFrame((time) => this.doFrame(time - currentTime, time));
     }
 
+    /**
+     * Frames per second metric.
+     *
+     * @param dt elapsed time in ms
+     */
     updateFps(dt) {
         this.fpsCount++;
         this.fpsAccMs += dt;
